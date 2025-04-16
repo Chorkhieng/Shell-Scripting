@@ -4,7 +4,7 @@
 # If the number of arguments is incorrect ( $# != 2) print error message and exit
 if [[ $# != 2 ]]
 then
-  echo "Usage: backup.sh target_directory_name destination_directory_name"
+  echo "backup.sh target_directory_name destination_directory_name"
   exit
 fi
 
@@ -15,53 +15,59 @@ then
   exit
 fi
 
-# [TASK 1] Assign arguments to variables
+# [TASK 1]
 targetDirectory=$1
 destinationDirectory=$2
 
-# [TASK 2] Print input paths for confirmation
+# [TASK 2]
 echo "Target Directory: $targetDirectory"
 echo "Destination Directory: $destinationDirectory"
 
-# [TASK 3] Get current timestamp
+# [TASK 3]
 currentTS=`date +%s`
 
-# [TASK 4] Create backup filename with timestamp
+# [TASK 4]
 backupFileName="backup-$currentTS.tar.gz"
 
-# [TASK 5] Get absolute path of target directory
+# We're going to:
+  # 1: Go into the target directory
+  # 2: Create the backup file
+  # 3: Move the backup file to the destination directory
+
+# To make things easier, we will define some useful variables...
+
+# [TASK 5]
 origAbsPath=`realpath $targetDirectory`
 
-# [TASK 6] Go to destination directory and get its absolute path
+# [TASK 6]
 cd $destinationDirectory
 destDirAbsPath=`pwd`
 
-# [TASK 7] Go back to the original script location
+# [TASK 7]
 cd $origAbsPath
 cd ..
 
-# [TASK 8] Get timestamp for 24 hours ago
+# [TASK 8]
 yesterdayTS=$(($currentTS - 86400))
 
-# [TASK 9] Iterate over files in target directory
 declare -a toBackup
-for file in $(ls $origAbsPath)
+
+for file in $(ls $origAbsPath)  # [TASK 9]
 do
-  # [TASK 10] Get last modified time of file
+  # [TASK 10]
   fileTS=`date -r $origAbsPath/$file +%s`
 
   if (( $fileTS > $yesterdayTS ))
   then
-    # [TASK 11] Add file to backup list
+    # [TASK 11]
     toBackup+=($file)
   fi
 done
 
-# [TASK 12] Create the tar archive from the list of updated files
+# [TASK 12]
 tar -czf $backupFileName ${toBackup[@]}
 
-# [TASK 13] Move the backup archive to the destination directory
+# [TASK 13]
 mv $backupFileName $destDirAbsPath
 
-# Done!
-echo "Backup complete. File saved to $destDirAbsPath/$backupFileName"
+# Congratulations! You completed the final project for this course!
